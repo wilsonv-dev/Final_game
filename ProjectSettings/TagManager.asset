@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - espada
   layers:
   - Default
   - TransparentFX
@@ -11,7 +12,7 @@ TagManager:
   - suelo
   - Water
   - UI
-  - 
+  - particulas
   - 
   - 
   - 
@@ -40,6 +41,18 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: particulas
+    uniqueID: 3298991791
+    locked: 0
+  - name: paredes
+    uniqueID: 2273637953
+    locked: 0
+  - name: personajes
+    uniqueID: 1383059447
+    locked: 0
+  - name: adornos
+    uniqueID: 3336426299
     locked: 0
   m_RenderingLayers:
   - Default
