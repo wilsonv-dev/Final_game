@@ -1,43 +1,45 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class gamePause : MonoBehaviour
 {
-
     public GameObject menuPausa;
     public bool juegoPausado = false;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Escape)){
-        if (juegoPausado)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            reanudar();
-        }
-        else
-        {
-            pausar();
-        }
+            if (juegoPausado)
+                reanudar();
+            else
+                pausar();
         }
     }
 
     public void reanudar()
     {
         menuPausa.SetActive(false);
-        Time.timeScale=1;
+        Time.timeScale = 1;
         juegoPausado = false;
     }
-    
+
     public void pausar()
     {
-       menuPausa.SetActive(true);
-        Time.timeScale= 0;
-        juegoPausado = true; 
+        menuPausa.SetActive(true);
+        Time.timeScale = 0;
+        juegoPausado = true;
     }
 
+    public void reiniciarNivel()
+    {
+        Time.timeScale = 1; // importante, si no el nivel queda congelado
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void irAlMenu()
+    {
+        Time.timeScale = 1; // importante, mismo motivo
+        SceneManager.LoadScene("menu");
+    }
 }

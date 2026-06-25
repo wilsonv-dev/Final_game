@@ -6,7 +6,7 @@ public class movimiento : MonoBehaviour
 {
     public float velocidad = 5f;
     public float fuerzaSalto = 8f;
-    public float fuerzaRebote = 8f;
+    public float fuerzaRebote = 0.01f;
     public float longitudRayCast = 0.1f;
     public int vida;
     public bool muerto;
@@ -41,10 +41,10 @@ public class movimiento : MonoBehaviour
                 if (enSuelo && Input.GetKeyDown(KeyCode.Space) && !recibiendoDanio)
                     rb.AddForce(new Vector2(0f, fuerzaSalto), ForceMode2D.Impulse);
             }
-        }
 
-        if (Input.GetKeyDown(KeyCode.Z) && !atacando && enSuelo)
-            Atacando();
+            if (Input.GetKeyDown(KeyCode.Z) && !atacando && enSuelo)
+                Atacando();
+        }
 
         animaciones();
     }
@@ -81,12 +81,19 @@ public class movimiento : MonoBehaviour
 
     public void RecibeDanio(Vector2 direccion, int catDanio)
     {
-        if (!recibiendoDanio)
+        if (!recibiendoDanio && !muerto)
         {
-            StartCoroutine(RutinaRecibeDanio(direccion));
+            // Se activa de inmediato, en el mismo frame, evita doble golpe
+            recibiendoDanio = true;
             vida -= catDanio;
+
             if (vida <= 0)
+            {
                 muerto = true;
+                GameManager.Instance.MostrarGameOver();
+            }
+
+            StartCoroutine(RutinaRecibeDanio(direccion));
         }
     }
 
@@ -97,8 +104,6 @@ public class movimiento : MonoBehaviour
 
     private IEnumerator RutinaRecibeDanio(Vector2 direccion)
     {
-        recibiendoDanio = true;
-
         Vector2 rebote = new Vector2(-direccion.x * 1.5f, 1.5f).normalized;
         rb.AddForce(rebote * fuerzaRebote, ForceMode2D.Impulse);
 
@@ -110,7 +115,9 @@ public class movimiento : MonoBehaviour
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         yield return new WaitForSeconds(stateInfo.length);
 
-        recibiendoDanio = false;
+        // Si murió durante la animación de daño, no reactivar el movimiento
+        if (!muerto)
+            recibiendoDanio = false;
     }
 
     public void DesactivaDanio()
@@ -133,4 +140,14 @@ public class movimiento : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + Vector3.down * longitudRayCast);
     }
+
+    public void MorirInstantaneo()
+{
+    if (!muerto)
+    {
+        muerto = true;
+        vida = 0;
+        GameManager.Instance.MostrarGameOver();
+    }
+}
 }

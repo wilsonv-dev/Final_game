@@ -3,32 +3,54 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-
+[System.Serializable]
+public class NivelData
+{
+    public int numeroNivel;
+    public Vector2 posicionBoton;
+}
 
 public class nivelSelector : MonoBehaviour
 {
-
     public GameObject nivelButtonPrefab;
     public Transform buttonContainer;
-    public int totalLevels = 5;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public NivelData[] niveles;
+
     void Start()
     {
         generateLevelButtons();
     }
+
     public void generateLevelButtons()
     {
-        for(int i = 1; i<= totalLevels; i++)
+        int nivelesDesbloqueados = PlayerPrefs.GetInt("NivelesDesbloqueados", 1);
+
+        foreach (NivelData nivel in niveles)
         {
             GameObject buttonObj = Instantiate(nivelButtonPrefab, buttonContainer);
-            buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = "Nivel " + 1;
 
-            int levelIndex = i;
-            buttonObj.GetComponent<Button>().onClick.AddListener(() => 
-            { 
-                SceneManager.LoadScene("Nivel_" + levelIndex);
-            });
+            RectTransform rt = buttonObj.GetComponent<RectTransform>();
+            rt.anchoredPosition = nivel.posicionBoton;
+
+            buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = "Nivel " + nivel.numeroNivel;
+
+            bool desbloqueado = nivel.numeroNivel <= nivelesDesbloqueados;
+            int levelIndex = nivel.numeroNivel;
+
+            Button boton = buttonObj.GetComponent<Button>();
+
+            if (desbloqueado)
+            {
+                boton.interactable = true;
+                boton.onClick.AddListener(() =>
+                {
+                    SceneManager.LoadScene("nivel_" + levelIndex);
+                });
+            }
+            else
+            {
+                boton.interactable = false;
+            }
         }
     }
-  
 }
